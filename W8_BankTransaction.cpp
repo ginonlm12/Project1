@@ -1,10 +1,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-set<string> accounts;
-int number_transactions = 0, total_money_transaction = 0;
-map<string, int> transaction_from;
-map<string, vector<string>> accountTransactions;
+set<string> accounts; // query #3
+int number_transactions = 0, total_money_transaction = 0; // query #1, #2
+map<string, int> transaction_from; // query #4
+map<string, vector<string>> accountTransactions; // query #5
 
 void input(){
     ios_base::sync_with_stdio(0);
@@ -44,10 +44,9 @@ bool DFSCycle(string sAccount, string cAccount, int k, int depth, vector<string>
     }
 
     visited.push_back(cAccount);
-    //cout << "Original  " <<  cAccount << endl;
     for (const string& neighbor : accountTransactions[cAccount]) {
-        if (find(visited.begin(), visited.end(), neighbor) == visited.end() || (depth == k - 1 && neighbor == sAccount)){
-                //cout << "depth = " << depth << "   Original  " <<  cAccount << "  Neighbor  " << neighbor << endl;
+        if(depth == k - 1 && neighbor == sAccount) return true;
+        if (find(visited.begin(), visited.end(), neighbor) == visited.end()){
             if(DFSCycle(sAccount, neighbor, k, depth + 1, visited)) return true;
         }
     }
@@ -80,7 +79,7 @@ void output(){
         if(query == "?inspect_cycle"){
             cin >> account >> cycle;
             vector<string> visited;
-            cout << DFSCycle(account, account, cycle, 0, visited) << endl;
+            printf("%d\n", DFSCycle(account, account, cycle, 0, visited));
         }
     }
 }
