@@ -1,15 +1,15 @@
 #include<bits/stdc++.h>
 using namespace std;
-map<string, int> TimetoRevenue;
-vector<string> Time;
 int total_orders = 0, total_revenue = 0;
 map<pair<string, string>, int> CStoRevenue;
 map<string, int> ShoptoRevenue;
-int Rev[90000];
+int Rev[86401]; // The revenue at a time point
+int Reven[86401]; // The revenue from 00:00:00 to a time point
 const int Original_time = '0'*(10*60*60+60*60+10*60+60+10+1);
+int max_time = 0;
 
 int Convert(string time){
-    return (time[0]*10+time[1])*60*60 + (time[3]*10+time[4])*60 + (time[6]*10+time[7]) - Original_time;
+    return (time[0]*10+time[1])*3600 + (time[3]*10+time[4])*60 + (time[6]*10+time[7]) - Original_time;
 }
 
 void input(){
@@ -34,35 +34,14 @@ void input(){
         CStoRevenue[make_pair(customer, shop)] += price;
 
         //query #5
-        //Time.push_back(time);
-        //TimetoRevenue[time] += price;
         Rev[Convert(time)] += price;
     }
-    //sort(Time.begin(), Time.end());
-}
 
-void Compute_Revenue_Period(string stime, string etime){
-    int start = Time.size()-1, end = 0;
-    for (int i = Time.size() - 1; i >= 0; i--){
-        if (Time[i] < etime) {
-            end = i;
-            break;
-        }
+    Reven[0] = Rev[0];
+    for(int i = 1; i< 86400; i++){
+        Reven[i] = Reven[i-1] + Rev[i];
     }
-    for (int i = 0; i < Time.size(); i++){
-        if (Time[i] > stime) {
-            start = i;
-            break;
-        }
-    }
-    int Revenue = 0;
-    for(int i = start; i<= end; i++){
-        if(Time[i] > Time[i-1] || i == start){
-            Revenue += TimetoRevenue[Time[i]];
-        }
-    }
-    printf("%d\n", Revenue);
-}       
+}
 
 void output(){
     ios_base::sync_with_stdio(0);
@@ -70,29 +49,23 @@ void output(){
 
     string query, shop, customer, stime, etime;
     while(cin >> query && query != "#"){
-        if(query == "?total_number_orders") printf("%d\n", total_orders);
-        if(query == "?total_revenue") printf("%d\n", total_revenue);
-        if(query == "?revenue_of_shop"){
+        if(query == "?total_revenue_in_period"){ //query #5
+            cin >> stime >> etime;
+            int S = Convert(stime);
+            int P = Convert(etime);
+            cout << Reven[P] - Reven[S] + Rev[S] << endl;
+        }
+        else if(query == "?total_consume_of_customer_shop"){ //query #4
+            cin >> customer >> shop;
+            printf("%d\n", CStoRevenue[make_pair(customer, shop)]);
+        }        
+        else if(query == "?revenue_of_shop"){ //query #3
             cin >> shop;
             printf("%d\n", ShoptoRevenue[shop]);
-            //cout << ShoptoRevenue[shop] << '\n';
         }
-        if(query == "?total_consume_of_customer_shop"){
-            cin >> customer >> shop;
-            pair<string, string> CS = make_pair(customer, shop);
-            printf("%d\n", CStoRevenue[CS]);
-            //cout << CStoRevenue[CS] << '\n';
-        }
-        if(query == "?total_revenue_in_period"){
-            cin >> stime >> etime;
-            //Compute_Revenue_Period(stime, etime);
-            int P = 0;
-            int S = Convert(stime), E = Convert(etime);
-            for(int i = S; i<= E; i++){
-                P += Rev[i];
-            }
-            cout << P << endl;
-        }
+        else if(query == "?total_number_orders") printf("%d\n", total_orders); //query #1
+        else if(query == "?total_revenue") printf("%d\n", total_revenue); //query #2
+        else break;
     }
 }
 int main(){
