@@ -7,6 +7,7 @@ map <string, int> Born_At; // The number of people having the same date-of-birth
 int NPBB_Date[419060], NPBB_Period[419060]; // query #4
 map <string, string> Parent[2]; // query #3
 map <string, int> generation; // query #3
+map<string, vector<string>> Relationship[]
 
 int convert(string date){
     return (date[0]*1000 + date[1]*100 + date[2]*10 + date[3])*372 + (date[5]*10 + date[6])*31 + (date[8]*10 + date[9]) - Initial_date;
