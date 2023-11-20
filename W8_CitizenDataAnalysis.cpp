@@ -104,7 +104,7 @@ void Try(int k){ // Backtracking
     }
 }
 
-int generation_compute(string code){
+int generation_compute(string code){ // dynamic programming
     if(generation[code] != 0) return generation[code];
     else if(code == "0000000"){
         generation[code] = -1;
